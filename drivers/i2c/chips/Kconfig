@@ -1,0 +1,74 @@
+#
+# Miscellaneous I2C chip drivers configuration
+#
+# *** DEPRECATED! Do not add new entries! See Makefile ***
+#
+
+menu "Miscellaneous I2C Chip support"
+
+config DS1682
+	tristate "Dallas DS1682 Total Elapsed Time Recorder with Alarm"
+	depends on EXPERIMENTAL
+	help
+	  If you say yes here you get support for Dallas Semiconductor
+	  DS1682 Total Elapsed Time Recorder.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called ds1682.
+
+config SENSORS_TSL2550
+	tristate "Taos TSL2550 ambient light sensor"
+	depends on EXPERIMENTAL
+	help
+	  If you say yes here you get support for the Taos TSL2550
+	  ambient light sensor.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called tsl2550.
+
+config SENSORS_PCA963X
+	tristate "Philips PCA963X 4-bit I2C-bus LED"
+	depends on I2C && EXPERIMENTAL
+	help
+	 If you say yes here you get support for the Philips PCA963X
+	 4-bit I2C-bus LED.
+
+	 This driver can also be built as a module.  If so, the module
+	 will be called pca963X.
+
+config GSENSOR_BOSCH_BMA150
+	tristate "Bosch BMA150 accelerometer with using I2C interface"
+	default y
+	help
+	  Say Y here if you want support for the BMA150 accelerometer
+	  device.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called gsensor-bosch-bma150.
+
+config ECOMPASS_AKM_AK8973S
+	tristate "AKM AK8973S geomagnetism detection with using I2C interface"
+	default y
+	help
+	  Say Y here if you want support for the  AK8973S geomagnetism
+	  detection device.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called ecompass-akm-ak8973s.
+
+config LUNA_LSENSOR
+	bool "Luna light sensor"
+	depends on ARCH_TEGRA && MACH_TEGRA_GENERIC
+	default y
+	help
+	  Say Y here if you want support for the TAOS light sensor device.
+	  To compile this driver as a module, choose M here: the
+	  module will be called lsensor.
+config LUNA_VIBRATOR
+	boolean "Luna Vibrator"
+	depends on ANDROID_TIMED_OUTPUT && MACH_TEGRA_GENERIC
+	default y
+	help
+	  Luna Vibrator
+
+endmenu
