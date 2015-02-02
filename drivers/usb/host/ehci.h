@@ -141,6 +141,7 @@ struct ehci_hcd {			/* one per controller */
 	unsigned		host_reinited:1; /* tegra */
 	unsigned		host_resumed:1; /* tegra */
 	struct work_struct	irq_work; /* tegra irq work for power control*/
+	unsigned		amd_l1_fix:1;
 
 	/* required for usb32 quirk */
 	#define OHCI_CTRL_HCFS          (3 << 6)
