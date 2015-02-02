@@ -170,11 +170,11 @@ static int  option_reset_resume(struct usb_interface *intf);
 #define HUAWEI_PRODUCT_E143D			0x143D
 #define HUAWEI_PRODUCT_E143E			0x143E
 #define HUAWEI_PRODUCT_E143F			0x143F
-
 #define HUAWEI_PRODUCT_E1440			0x1440
 #define HUAWEI_PRODUCT_E1441			0x1441
 #define HUAWEI_PRODUCT_E1448			0x1448
-
+#define HUAWEI_PRODUCT_K4505			0x1464
+#define HUAWEI_PRODUCT_K3765			0x1465
 #define HUAWEI_PRODUCT_E14AC			0x14AC
 #define HUAWEI_PRODUCT_ETS1220			0x1803
 
@@ -479,10 +479,12 @@ static struct usb_device_id option_ids[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E143C, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E143D, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E143E, 0xff, 0xff, 0xff) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E143F, 0xff, 0xff, 0xff) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E143F, 0xff, 0xff, 0xff) }.
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E1440, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E1441, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E1448, 0xff, 0xff, 0xff) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_K4505, 0xff, 0xff, 0xff) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_K3765, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_ETS1220, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E14AC) },
 	{ USB_DEVICE(AMOI_VENDOR_ID, AMOI_PRODUCT_9508) },
@@ -1252,6 +1254,13 @@ static int option_probe(struct usb_serial *serial,
 	if ((serial->dev->descriptor.idVendor == BANDRICH_VENDOR_ID ||
 		serial->dev->descriptor.idVendor == PIRELLI_VENDOR_ID) &&
 		serial->interface->cur_altsetting->desc.bInterfaceClass != 0xff)
+		return -ENODEV;
+
+	/* Don't bind network interfaces on Huawei K3765 & K4505 */
+	if (serial->dev->descriptor.idVendor == HUAWEI_VENDOR_ID &&
+		(serial->dev->descriptor.idProduct == HUAWEI_PRODUCT_K3765 ||
+			serial->dev->descriptor.idProduct == HUAWEI_PRODUCT_K4505) &&
+		serial->interface->cur_altsetting->desc.bInterfaceNumber == 1)
 		return -ENODEV;
 
 	data = serial->private = kzalloc(sizeof(struct option_intf_private), GFP_KERNEL);
