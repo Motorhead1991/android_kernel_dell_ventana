@@ -151,10 +151,12 @@ struct pt_regs {
 static inline int valid_user_regs(struct pt_regs *regs)
 {
 	unsigned long mode = regs->ARM_cpsr & MODE_MASK;
-	
-	
+
+	/*
+	 * Always clear the F (FIQ) and A (delayed abort) bits
+	 */
 	regs->ARM_cpsr &= ~(PSR_F_BIT | PSR_A_BIT);
-	
+
 	if ((regs->ARM_cpsr & PSR_I_BIT) == 0) {
 		if (mode == USR_MODE)
 			return 1;
