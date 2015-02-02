@@ -249,7 +249,7 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 	u32			temp;
 	u32			power_okay;
 	int			i;
-	u8			resume_needed = 0;
+	unsigned long		resume_needed = 0;
 
 	if (time_before (jiffies, ehci->next_statechange))
 		msleep(5);
@@ -315,8 +315,8 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 		if (test_bit(i, &ehci->bus_suspended) &&
 				(temp & PORT_SUSPEND)) {
 			temp |= PORT_RESUME;
-			printk(KERN_INFO "%s: ehci_bus_resume_needed.\n", __func__);	
-			resume_needed = 1;
+			printk(KERN_INFO "%s: ehci_bus_resume_needed.\n", __func__);
+			set_bit(i, &resume_needed);
 		}
 		printk(KERN_INFO "%s: ehci_bus_resume_needed, prepare to resume.\n", __func__);	
 		ehci_writel(ehci, temp, &ehci->regs->port_status [i]);
@@ -336,17 +336,13 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 	i = HCS_N_PORTS (ehci->hcs_params);
 	while (i--) {
 		temp = ehci_readl(ehci, &ehci->regs->port_status [i]);
-	
-	
-	
-	
-	
-	
+
 		printk(KERN_INFO "%s: ehci_bus_resume, waiting for Suspend bit cleared.\n", __func__);	
-	
-		while(test_bit(i, &ehci->bus_suspended) &&
-				(temp & (PORT_SUSPEND | PORT_RESUME))) {
-			temp = ehci_readl(ehci, &ehci->regs->port_status [i]);
+
+		if (test_bit(i, &resume_needed)) {
+			temp &= ~(PORT_RWC_BITS | PORT_RESUME);
+			ehci_writel(ehci, temp, &ehci->regs->port_status [i]);
+			ehci_vdbg (ehci, "resumed port %d\n", i + 1);
 		}
 	
 		printk(KERN_INFO "%s: ehci_bus_resume_needed, Suspend bit cleared.\n", __func__);	
