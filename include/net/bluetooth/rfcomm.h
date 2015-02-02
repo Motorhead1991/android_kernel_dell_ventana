@@ -154,6 +154,7 @@ struct rfcomm_msc {
 struct rfcomm_session {
 	struct list_head list;
 	struct socket   *sock;
+        struct timer_list timer;
 	unsigned long    state;
 	unsigned long    flags;
 	atomic_t         refcnt;
